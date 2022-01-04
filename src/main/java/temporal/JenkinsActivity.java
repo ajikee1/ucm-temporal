@@ -12,4 +12,7 @@ public interface JenkinsActivity {
 
     @ActivityMethod
     String executableUrlFromLocationUrl(String locationUrl);
+
+    @ActivityMethod
+    String getBuildStatus(String executionUrl);
 }

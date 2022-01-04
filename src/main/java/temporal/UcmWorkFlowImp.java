@@ -16,11 +16,16 @@ public class UcmWorkFlowImp implements UcmWorkFlow{
 
        Promise<String> locationUrlPromise = Async.function(jenkinsActivity::triggerJenkinsBuild, "temporal_demo");
        String locationUrl = locationUrlPromise.get();
-       System.out.println("locationUrl: " + locationUrl);
+       System.out.println("***** LOCATION URL : " + locationUrl + " *****");
 
         Promise<String> executionUrlPromise =Async.function(jenkinsActivity:: executableUrlFromLocationUrl,locationUrl);
         String executionUrl = executionUrlPromise.get();
-        System.out.println("executionUrl: " + executionUrl);
+        System.out.println("***** EXECUTION URL : " + executionUrl + " *****");
+
+        Promise<String> buildStatusPromise =Async.function(jenkinsActivity::getBuildStatus, executionUrl);
+        String buildStatus = buildStatusPromise.get();
+        System.out.println("***** BUILD STATUS : " + buildStatus + " *****");
+
 
     }
 }

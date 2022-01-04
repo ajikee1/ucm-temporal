@@ -10,7 +10,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -106,8 +105,6 @@ public class JenkinsActivityImp implements JenkinsActivity {
                     executionStarted = true;
                     JSONObject executableObject = jsonObject.getJSONObject("executable");
                     executableUrl = executableObject.get("url").toString();
-                    System.out.println("Executable URL: " + executableUrl);
-
                     return executableUrl;
                 }
 
@@ -149,5 +146,54 @@ public class JenkinsActivityImp implements JenkinsActivity {
         }
 
         return location;
+    }
+
+    @Override
+    public String getBuildStatus(String executionUrl) {
+        executionUrl = executionUrl + "api/json";
+
+        String buildResult = null;
+
+        Boolean executionFinished = false;
+        long timeOutCounter = 0l;
+
+        /* Wait for the execution URL to show up */
+        while(!executionFinished){
+
+            String line = null;
+            StringBuffer result = new StringBuffer();
+
+            HttpGet get = new HttpGet(String.valueOf(executionUrl));
+            get.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
+
+            HttpClient client = HttpClientBuilder.create().build();
+
+            try {
+                Thread.sleep(1000);
+                timeOutCounter = (timeOutCounter + 1L);
+                System.out.println("Waiting on the job execution to finish " + timeOutCounter);
+                HttpResponse response = client.execute(get);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+
+                while ((line = reader.readLine()) != null) {
+                    result.append(line.toString());
+                }
+
+                JSONObject jsonObject = new JSONObject(result.toString());
+                String building = jsonObject.get("building").toString();
+
+                if(building == "false"){
+                    executionFinished = true;
+                    buildResult = jsonObject.get("result").toString();
+                    return buildResult;
+                }
+
+            } catch (IOException | InterruptedException | JSONException ie) {
+                Activity.wrap(ie);
+            }
+
+        }
+
+        return buildResult;
     }
 }

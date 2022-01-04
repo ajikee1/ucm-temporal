@@ -110,7 +110,8 @@ public class JenkinsCaller {
 
             System.out.println("Build Status: " + statusCode);
 
-            executableUrlFromLocationUrl(location);
+            String executionUrl =  executableUrlFromLocationUrl(location);
+            getBuildStatus(executionUrl);
 
 
         } catch (IOException ie) {
@@ -166,6 +167,57 @@ public class JenkinsCaller {
         }
 
         return executableUrl;
+    }
+
+    public String getBuildStatus(String executionUrl) {
+        executionUrl = executionUrl + "api/json";
+
+        String buildResult = null;
+
+        Boolean executionFinished = false;
+        long timeOutCounter = 0l;
+
+        /* Wait for the execution URL to show up */
+        while(!executionFinished){
+
+            String line = null;
+            StringBuffer result = new StringBuffer();
+
+            HttpGet get = new HttpGet(String.valueOf(executionUrl));
+
+            String authHeader = generateEncodedAuthHeader();
+            get.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
+
+            HttpClient client = HttpClientBuilder.create().build();
+
+            try {
+                Thread.sleep(1000);
+                timeOutCounter = (timeOutCounter + 1L);
+                System.out.println("Waiting on the job execution to finish " + timeOutCounter);
+                HttpResponse response = client.execute(get);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+
+                while ((line = reader.readLine()) != null) {
+                    result.append(line.toString());
+                }
+
+                JSONObject jsonObject = new JSONObject(result.toString());
+                String building = jsonObject.get("building").toString();
+
+                if(building == "false"){
+                    executionFinished = true;
+                    buildResult = jsonObject.get("result").toString();
+                    System.out.println("Build Result: " + buildResult);
+                    return buildResult;
+                }
+
+            } catch (IOException | InterruptedException | JSONException ie) {
+                ie.printStackTrace();
+            }
+
+        }
+
+        return buildResult;
     }
 
 
