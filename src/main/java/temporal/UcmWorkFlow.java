@@ -1,5 +1,7 @@
 package temporal;
 
+import io.temporal.workflow.QueryMethod;
+import io.temporal.workflow.SignalMethod;
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
 
@@ -9,5 +11,5 @@ import java.util.List;
 public interface UcmWorkFlow {
 
     @WorkflowMethod
-    void initiateWorkFlow(List<String> l);;
+    void initiateWorkFlow(List<String> l, String issueId);
 }

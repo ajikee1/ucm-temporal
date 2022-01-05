@@ -22,8 +22,10 @@ public class UcmWorkflowInit {
         jobList.add("nodeTest");
         jobList.add("temporal_demo");
 
-        WorkflowExecution we = WorkflowClient.start(workflow::initiateWorkFlow, jobList);
+        String issueId = "DIS-1";
 
+
+        WorkflowExecution we = WorkflowClient.start(workflow::initiateWorkFlow, jobList, issueId);
     }
 
 }

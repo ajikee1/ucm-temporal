@@ -1,4 +1,4 @@
-package temporal;
+package temporal.Jenkins;
 
 import helper.ApiHelper;
 import io.temporal.activity.Activity;

@@ -93,6 +93,19 @@ public class ApiHelper {
         return authHeader;
     }
 
+    public String generateEncodedAuthHeaderJira() {
+        Properties jiraProps = loadProperties("jira.properties");
+        String jiraUser = jiraProps.getProperty("jira_user");
+        String jiraToken = jiraProps.getProperty("jira_token");
+
+        /* Basic Authentication */
+        String auth = jiraUser + ":" + jiraToken;
+        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.ISO_8859_1));
+        String authHeader = "Basic " + new String(encodedAuth);
+
+        return authHeader;
+    }
+
     public Properties loadProperties(String propertiesFileName_) {
         Properties properties = new Properties();
         InputStream in = UcmWorkflowInit.class.getClassLoader().getResourceAsStream(propertiesFileName_);

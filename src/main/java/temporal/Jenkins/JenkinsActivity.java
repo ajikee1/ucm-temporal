@@ -1,8 +1,7 @@
-package temporal;
+package temporal.Jenkins;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
-import org.json.JSONObject;
 
 @ActivityInterface
 public interface JenkinsActivity {
