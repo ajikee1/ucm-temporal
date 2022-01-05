@@ -19,21 +19,7 @@ public class UcmWorkFlowImp implements UcmWorkFlow {
         List<Promise<String>> buildStatusPromiseList = new ArrayList<>();
 
         for (String job : jobList) {
-            Promise<String> locationUrlPromise = Async.function(jenkinsActivity::triggerJenkinsBuild, job);
-            String locationUrl = locationUrlPromise.get();
-            System.out.println("***** LOCATION URL : " + locationUrl + " *****");
-
-            Promise<String> executionUrlPromise = Async.function(jenkinsActivity::executableUrlFromLocationUrl, locationUrl, job);
-            String executionUrl = executionUrlPromise.get();
-            System.out.println("***** EXECUTION URL : " + executionUrl + " *****");
-
-            buildStatusPromiseList.add(Async.function(jenkinsActivity::getBuildStatus, executionUrl, job));
-
-            /*
-                Promise<String> buildStatusPromise =Async.function(jenkinsActivity::getBuildStatus, executionUrl);
-                String buildStatus = buildStatusPromise.get();
-                System.out.println("***** BUILD STATUS : " + buildStatus + " *****");
-             */
+            buildStatusPromiseList.add(Async.function(jenkinsActivity::triggerJenkinsBuild, job));
         }
 
         /* Wait for all Jenkins jobs to return a build status */
@@ -43,7 +29,6 @@ public class UcmWorkFlowImp implements UcmWorkFlow {
             String buildStatus = buildStatusPromise.get();
             System.out.println("***** BUILD STATUS : " + buildStatus + " *****");
         }
-
 
     }
 }

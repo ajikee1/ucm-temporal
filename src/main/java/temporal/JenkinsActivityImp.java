@@ -1,204 +1,182 @@
 package temporal;
 
-import helper.Helper;
+import helper.ApiHelper;
 import io.temporal.activity.Activity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 
 public class JenkinsActivityImp implements JenkinsActivity {
 
+    private ApiHelper apiHelper;
     private String jenkinsIp;
     private String jenkinsPort;
     private String authHeader;
 
     @Override
     public String triggerJenkinsBuild(String jobId) {
-        String locationUrl = null;
+        String buildStatus = null;
+        apiHelper = new ApiHelper();
 
-        Helper help = new Helper();
-
-        Properties jenkinsProps = help.loadProperties("jenkins.properties");
+        Properties jenkinsProps = apiHelper.loadProperties("jenkins.properties");
         jenkinsIp = jenkinsProps.getProperty("jenkins_ip");
         jenkinsPort = jenkinsProps.getProperty("jenkins_port");
+        authHeader = apiHelper.generateEncodedAuthHeader();
 
-        String line = null;
-        StringBuffer result = new StringBuffer();
+        String crumb = getCrumb();
+        System.out.println("Crumb: " + crumb);
 
+        if (crumb != null) {
+            String locationUrl = buildJob(jobId, crumb);
+
+            if (locationUrl != null) {
+                String executableUrl = getExecutableUrl(locationUrl, jobId);
+
+                if (executableUrl != null) {
+                    buildStatus = getBuildStatus(executableUrl, jobId);
+                }
+
+            }
+        }
+        return buildStatus;
+    }
+
+
+
+    /* Get the Jenkins Crumb */
+    public String getCrumb() {
+        String crumb = null;
         String url = "http://" + jenkinsIp + ":" + jenkinsPort + "/crumbIssuer/api/json";
-        HttpGet get = new HttpGet(url);
 
-        authHeader = help.generateEncodedAuthHeader();
-        get.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
+        HashMap<String, String> headersHm = new HashMap<>();
+        headersHm.put(HttpHeaders.AUTHORIZATION, authHeader);
 
-        HttpClient client = HttpClientBuilder.create().build();
+        String httpResponse = apiHelper.runHttpGetRequest(url, headersHm);
+        if (httpResponse != null) {
+            try {
+                JSONObject jsonObject = new JSONObject(httpResponse.toString());
+                crumb = jsonObject.get("crumb").toString();
+                return crumb;
 
-        try {
-            HttpResponse response = client.execute(get);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-
-            while ((line = reader.readLine()) != null) {
-                result.append(line.toString());
+            } catch (JSONException e) {
+                Activity.wrap(e);
             }
 
-            JSONObject jsonObject = new JSONObject(result.toString());
-            String crumb = jsonObject.get("crumb").toString();
-            System.out.println("Crumb: " + crumb);
+        }
+        return crumb;
+    }
 
-            if (crumb != null) {
-                locationUrl = triggerBuild(jobId, crumb);
+    /* Trigger the build of the Jenkins job using the crumb */
+    public String buildJob(String jobId, String crumb) {
+        String locationUrl = null;
+        String url = "http://" + jenkinsIp + ":" + jenkinsPort + "/job/" + jobId + "/build";
+
+        HashMap<String, String> headersHm = new HashMap<String, String>();
+        headersHm.put("Jenkins-Crumb", crumb);
+        headersHm.put(HttpHeaders.AUTHORIZATION, authHeader);
+
+        Map<HttpResponse, String> responseHashMap  = apiHelper.runHttpPostRequest(url, headersHm);
+
+        HttpResponse httpResponse = null;
+        for (Map.Entry e : responseHashMap.entrySet()) {
+            httpResponse = (HttpResponse) e.getKey();
+        }
+
+        if (httpResponse != null) {
+            int statusCode = httpResponse.getStatusLine().getStatusCode();
+            locationUrl = httpResponse.getFirstHeader("Location").getValue();
+
+            System.out.println("Build Status: " + statusCode + " Build Location URL: " + locationUrl);
+
+            if (statusCode == 201) {
                 return locationUrl;
             }
 
-        } catch (IOException | JSONException ie) {
-            Activity.wrap(ie);
         }
-
         return locationUrl;
     }
 
-    @Override
-    public String executableUrlFromLocationUrl(String locationUrl, String jobId) {
-
-        locationUrl = locationUrl + "api/json";
-
+    /* Get the Executable URL from the Location URL */
+    public String getExecutableUrl(String locationUrl, String jobId) {
         String executableUrl = null;
-
         Boolean executionStarted = false;
         long timeOutCounter = 0l;
 
-        /* Wait for the execution URL to show up */
+        // Wait for job execution to start
         while (!executionStarted) {
 
-            String line = null;
-            StringBuffer result = new StringBuffer();
-
-            HttpGet get = new HttpGet(String.valueOf(locationUrl));
-            get.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
-
-            HttpClient client = HttpClientBuilder.create().build();
-
             try {
+
                 Thread.sleep(1000);
                 timeOutCounter = (timeOutCounter + 1L);
                 System.out.println("Waiting on the job " + jobId + " execution to start " + timeOutCounter + " seconds");
 
-                // Heartbeat to temporal
                 Activity.getExecutionContext().heartbeat("Waiting on the job " + jobId + " execution to start " + timeOutCounter + " seconds");
 
-                HttpResponse response = client.execute(get);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+                HashMap<String, String> headersHm = new HashMap<>();
+                headersHm.put(HttpHeaders.AUTHORIZATION, authHeader);
 
-                while ((line = reader.readLine()) != null) {
-                    result.append(line.toString());
+                String httpResponse = apiHelper.runHttpGetRequest(locationUrl + "api/json", headersHm);
+
+                if (httpResponse != null) {
+                    JSONObject jsonObject = new JSONObject(httpResponse.toString());
+
+                    if (jsonObject.has("executable")) {
+                        executionStarted = true;
+                        JSONObject executableObject = jsonObject.getJSONObject("executable");
+                        executableUrl = executableObject.get("url").toString();
+                        return executableUrl;
+                    }
                 }
 
-                JSONObject jsonObject = new JSONObject(result.toString());
-
-                if (jsonObject.has("executable")) {
-                    executionStarted = true;
-                    JSONObject executableObject = jsonObject.getJSONObject("executable");
-                    executableUrl = executableObject.get("url").toString();
-                    return executableUrl;
-                }
-
-            } catch (IOException | InterruptedException | JSONException ie) {
-                Activity.wrap(ie);
+            } catch (Exception e) {
+                Activity.wrap(e);
             }
+
         }
+
         return executableUrl;
     }
 
-
-    public String triggerBuild(String jobId, String crumb) {
-        String location = null;
-        String line;
-        StringBuffer result = new StringBuffer();
-
-        String url = "http://" + jenkinsIp + ":" + jenkinsPort + "/job/" + jobId + "/build";
-
-        HttpPost post = new HttpPost(url);
-        post.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
-        post.setHeader("Jenkins-Crumb", crumb);
-        HttpClient client = HttpClientBuilder.create().build();
-
-        try {
-            HttpResponse response = client.execute(post);
-
-            int statusCode = response.getStatusLine().getStatusCode();
-            location = response.getFirstHeader("Location").getValue();
-
-            System.out.println("Build Status: " + statusCode + " Build Location URL: " + location);
-
-            if (statusCode == 201) {
-                return location;
-            }
-
-
-        } catch (IOException ie) {
-            Activity.wrap(ie);
-        }
-
-        return location;
-    }
-
-    @Override
+    /* Get the Job build status */
     public String getBuildStatus(String executionUrl, String jobId) {
-        executionUrl = executionUrl + "api/json";
-
         String buildResult = null;
-
         Boolean executionFinished = false;
         long timeOutCounter = 0l;
 
-        /* Wait for the execution URL to show up */
-        while(!executionFinished){
-
-            String line = null;
-            StringBuffer result = new StringBuffer();
-
-            HttpGet get = new HttpGet(String.valueOf(executionUrl));
-            get.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
-
-            HttpClient client = HttpClientBuilder.create().build();
+        // Wait for job execution to finish
+        while (!executionFinished) {
 
             try {
-                Thread.sleep(1000);
 
+                Thread.sleep(1000);
                 timeOutCounter = (timeOutCounter + 1L);
                 System.out.println("Waiting on the job " + jobId + " execution to finish " + timeOutCounter + " seconds");
-
-                // Heartbeat to temporal
                 Activity.getExecutionContext().heartbeat("Waiting on the job " + jobId + " execution to finish " + timeOutCounter + " seconds");
 
-                HttpResponse response = client.execute(get);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+                HashMap<String, String> headersHm = new HashMap<>();
+                headersHm.put(HttpHeaders.AUTHORIZATION, authHeader);
 
-                while ((line = reader.readLine()) != null) {
-                    result.append(line.toString());
+                String httpResponse = apiHelper.runHttpGetRequest(executionUrl + "api/json", headersHm);
+
+                if (httpResponse != null) {
+                    JSONObject jsonObject = new JSONObject(httpResponse.toString());
+                    String building = jsonObject.get("building").toString();
+
+                    if (building == "false") {
+                        executionFinished = true;
+                        buildResult = jsonObject.get("result").toString();
+                        return buildResult;
+                    }
                 }
 
-                JSONObject jsonObject = new JSONObject(result.toString());
-                String building = jsonObject.get("building").toString();
-
-                if(building == "false"){
-                    executionFinished = true;
-                    buildResult = jsonObject.get("result").toString();
-                    return buildResult;
-                }
-
-            } catch (IOException | InterruptedException | JSONException ie) {
-                Activity.wrap(ie);
+            } catch (Exception e) {
+                Activity.wrap(e);
             }
 
         }
