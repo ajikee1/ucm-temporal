@@ -4,7 +4,6 @@ import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.serviceclient.WorkflowServiceStubs;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +22,6 @@ public class UcmWorkflowInit {
         jobList.add("temporal_demo");
 
         String issueId = "DIS-1";
-
 
         WorkflowExecution we = WorkflowClient.start(workflow::initiateWorkFlow, jobList, issueId);
     }
