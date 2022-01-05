@@ -68,7 +68,7 @@ public class JenkinsActivityImp implements JenkinsActivity {
     }
 
     @Override
-    public String executableUrlFromLocationUrl(String locationUrl) {
+    public String executableUrlFromLocationUrl(String locationUrl, String jobId) {
 
         locationUrl = locationUrl + "api/json";
 
@@ -91,7 +91,7 @@ public class JenkinsActivityImp implements JenkinsActivity {
             try {
                 Thread.sleep(1000);
                 timeOutCounter = (timeOutCounter + 1L);
-                System.out.println("Waiting on the job execution to start " + timeOutCounter + " seconds");
+                System.out.println("Waiting on the job " + jobId + " execution to start " + timeOutCounter + " seconds");
                 HttpResponse response = client.execute(get);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 
@@ -149,7 +149,7 @@ public class JenkinsActivityImp implements JenkinsActivity {
     }
 
     @Override
-    public String getBuildStatus(String executionUrl) {
+    public String getBuildStatus(String executionUrl, String jobId) {
         executionUrl = executionUrl + "api/json";
 
         String buildResult = null;
@@ -171,7 +171,7 @@ public class JenkinsActivityImp implements JenkinsActivity {
             try {
                 Thread.sleep(1000);
                 timeOutCounter = (timeOutCounter + 1L);
-                System.out.println("Waiting on the job execution to finish " + timeOutCounter);
+                System.out.println("Waiting on the job " + jobId + " execution to finish " + timeOutCounter + " seconds");
                 HttpResponse response = client.execute(get);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 

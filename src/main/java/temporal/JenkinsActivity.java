@@ -11,8 +11,8 @@ public interface JenkinsActivity {
     String triggerJenkinsBuild(String jobId);
 
     @ActivityMethod
-    String executableUrlFromLocationUrl(String locationUrl);
+    String executableUrlFromLocationUrl(String locationUrl, String jobId);
 
     @ActivityMethod
-    String getBuildStatus(String executionUrl);
+    String getBuildStatus(String executionUrl,String jobId);
 }
