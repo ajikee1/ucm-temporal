@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-
 public class JenkinsActivityImp implements JenkinsActivity {
 
     private ApiHelper apiHelper;
@@ -45,8 +44,6 @@ public class JenkinsActivityImp implements JenkinsActivity {
         }
         return buildStatus;
     }
-
-
 
     /* Get the Jenkins Crumb */
     public String getCrumb() {
