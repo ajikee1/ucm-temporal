@@ -92,6 +92,10 @@ public class JenkinsActivityImp implements JenkinsActivity {
                 Thread.sleep(1000);
                 timeOutCounter = (timeOutCounter + 1L);
                 System.out.println("Waiting on the job " + jobId + " execution to start " + timeOutCounter + " seconds");
+
+                // Heartbeat to temporal
+                Activity.getExecutionContext().heartbeat("Waiting on the job " + jobId + " execution to start " + timeOutCounter + " seconds");
+
                 HttpResponse response = client.execute(get);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 
@@ -170,8 +174,13 @@ public class JenkinsActivityImp implements JenkinsActivity {
 
             try {
                 Thread.sleep(1000);
+
                 timeOutCounter = (timeOutCounter + 1L);
                 System.out.println("Waiting on the job " + jobId + " execution to finish " + timeOutCounter + " seconds");
+
+                // Heartbeat to temporal
+                Activity.getExecutionContext().heartbeat("Waiting on the job " + jobId + " execution to finish " + timeOutCounter + " seconds");
+
                 HttpResponse response = client.execute(get);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 
