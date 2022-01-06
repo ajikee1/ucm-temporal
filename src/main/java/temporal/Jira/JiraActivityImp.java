@@ -1,5 +1,6 @@
 package temporal.Jira;
 
+import com.google.gson.Gson;
 import helper.ApiHelper;
 import io.temporal.activity.Activity;
 import org.apache.http.HttpHeaders;
@@ -45,6 +46,8 @@ public class JiraActivityImp implements JiraActivity {
     public void addResultsToJira(List<buildResultsDAO> buildResults ) {
         for(buildResultsDAO buildResult: buildResults){
             System.out.println("WORKFLOW ID: " + buildResult.getWorkflowId() + " RUN ID: " + buildResult.getRunId() + " JENKINS JOB ID: " + buildResult.getJobId() + " BUILD STATUS: " + buildResult.getBuildStatus());
+
+            System.out.println(new Gson().toJson(buildResult));
         }
     }
 

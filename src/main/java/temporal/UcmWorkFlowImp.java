@@ -1,6 +1,5 @@
 package temporal;
 
-import com.google.gson.Gson;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.workflow.Async;
 import io.temporal.workflow.Promise;
@@ -9,7 +8,6 @@ import io.temporal.workflow.WorkflowInfo;
 import temporal.Dao.buildResultsDAO;
 import temporal.Jenkins.JenkinsActivity;
 import temporal.Jira.JiraActivity;
-
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
