@@ -12,7 +12,7 @@ public interface JiraActivity {
     @ActivityMethod
     String getIssueStatus(String issueId);
 
-    void addResultsToJira(List<buildResultsDAO> buildResults );
+    void addResultsToJira(String issueId,List<buildResultsDAO> buildResults );
 
 
 }

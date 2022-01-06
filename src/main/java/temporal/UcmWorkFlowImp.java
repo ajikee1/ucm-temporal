@@ -64,7 +64,7 @@ public class UcmWorkFlowImp implements UcmWorkFlow {
             buildResults.add(new buildResultsDAO( workFlowId, wfRunId, jobId, buildStatus));
         }
 
-        jiraActivity.addResultsToJira(buildResults);
+        jiraActivity.addResultsToJira(issueId,buildResults);
 
 
 
