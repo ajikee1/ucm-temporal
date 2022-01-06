@@ -1,12 +1,16 @@
 package helper;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.json.JSONObject;
 import temporal.UcmWorkflowInit;
 
 import java.io.BufferedReader;
@@ -38,6 +42,43 @@ public class ApiHelper {
         HttpClient client = HttpClientBuilder.create().build();
 
         try {
+            httpResponse = client.execute(post);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
+            while ((line = reader.readLine()) != null) {
+                result.append(line.toString());
+            }
+
+            responseHashMap.put(httpResponse, result.toString());
+
+        } catch (IOException ie) {
+            ie.printStackTrace();
+        }
+
+        return responseHashMap;
+    }
+
+    public Map<HttpResponse, String> runHttpPostRequestWithRequestBody(String apiRequest, Map<String, String> headersMap, JSONObject requestBody) {
+        String line;
+        HttpResponse httpResponse = null;
+        StringBuffer result = new StringBuffer();
+
+        Map<HttpResponse, String> responseHashMap = new HashMap<>();
+
+        HttpPost post = new HttpPost(apiRequest);
+
+        if (!headersMap.isEmpty()) {
+            for (Map.Entry header : headersMap.entrySet()) {
+                post.setHeader(header.getKey().toString(), header.getValue().toString());
+            }
+        }
+
+        HttpClient client = HttpClientBuilder.create().build();
+
+        try {
+
+            StringEntity postingString = new StringEntity(requestBody.toString());
+            post.setEntity(postingString);
+
             httpResponse = client.execute(post);
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
             while ((line = reader.readLine()) != null) {
