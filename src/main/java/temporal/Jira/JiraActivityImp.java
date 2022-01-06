@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import helper.ApiHelper;
 import io.temporal.activity.Activity;
 import org.apache.http.HttpHeaders;
+import org.checkerframework.checker.units.qual.A;
 import org.json.JSONException;
 import org.json.JSONObject;
 import temporal.Dao.buildResultsDAO;
@@ -43,12 +44,24 @@ public class JiraActivityImp implements JiraActivity {
     }
 
     @Override
-    public void addResultsToJira(List<buildResultsDAO> buildResults ) {
-        for(buildResultsDAO buildResult: buildResults){
-            System.out.println("WORKFLOW ID: " + buildResult.getWorkflowId() + " RUN ID: " + buildResult.getRunId() + " JENKINS JOB ID: " + buildResult.getJobId() + " BUILD STATUS: " + buildResult.getBuildStatus());
+    public void addResultsToJira(List<buildResultsDAO> buildResults) {
 
-            System.out.println(new Gson().toJson(buildResult));
+        try {
+            JSONObject json = new JSONObject();
+
+            for (buildResultsDAO buildResult : buildResults) {
+                String t = new Gson().toJson(buildResult);
+                JSONObject js = new JSONObject(t);
+
+                json.put(buildResult.getJobId(), js);
+            }
+
+            System.out.println(json);
+
+        } catch (JSONException e) {
+            Activity.wrap(e);
         }
+
     }
 
 
