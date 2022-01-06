@@ -1,5 +1,6 @@
 package temporal;
 
+import com.google.gson.Gson;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.workflow.Async;
 import io.temporal.workflow.Promise;
@@ -31,8 +32,6 @@ public class UcmWorkFlowImp implements UcmWorkFlow {
         String wfRunId = we.getRunId();
         String workFlowId = we.getWorkflowId();
 
-        List<buildResultsDAO> buildResults = new ArrayList<>();
-
         while (!ticketApproved) {
             Promise<String> ticketStatusPromise = Async.function(jiraActivity::getIssueStatus, issueId);
             String ticketStatus = ticketStatusPromise.get();
@@ -55,19 +54,20 @@ public class UcmWorkFlowImp implements UcmWorkFlow {
 
         Promise.allOf(buildStatusPromiseList).get();
 
+        List<buildResultsDAO> buildResults = new ArrayList<>();
+
         for (Promise<Map<String, String>> buildStatusPromise : buildStatusPromiseList) {
             String jobId = null; String buildStatus = null;
             Map<String, String> buildStatuses = buildStatusPromise.get();
             for (Map.Entry m : buildStatuses.entrySet()) {
-                 jobId = m.getKey().toString();
-                 buildStatus = m.getValue().toString();
+                jobId = m.getKey().toString();
+                buildStatus = m.getValue().toString();
             }
             buildResults.add(new buildResultsDAO( workFlowId, wfRunId, jobId, buildStatus));
         }
 
-        for(buildResultsDAO buildResult: buildResults){
-            System.out.println("WORKFLOW ID: " + buildResult.getWorkflowId() + " RUN ID: " + buildResult.getRunId() + " JENKINS JOB ID: " + buildResult.getJobId() + " BUILD STATUS: " + buildResult.getBuildStatus());
-        }
+        jiraActivity.addResultsToJira(buildResults);
+
 
 
     }

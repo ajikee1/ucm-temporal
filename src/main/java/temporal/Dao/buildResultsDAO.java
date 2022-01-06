@@ -6,7 +6,11 @@ public class buildResultsDAO {
     private String jobId;
     private String buildStatus;
 
-    public buildResultsDAO(String workflowId, String runId, String jobId, String buildStatus){
+    public buildResultsDAO() {
+        super();
+    }
+
+    public buildResultsDAO(String workflowId, String runId, String jobId, String buildStatus) {
         this.workflowId = workflowId;
         this.runId = runId;
         this.jobId = jobId;

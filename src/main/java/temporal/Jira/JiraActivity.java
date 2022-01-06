@@ -5,6 +5,7 @@ import io.temporal.activity.ActivityMethod;
 import temporal.Dao.buildResultsDAO;
 
 import java.util.List;
+import java.util.Map;
 
 @ActivityInterface
 public interface JiraActivity {
@@ -12,7 +13,7 @@ public interface JiraActivity {
     @ActivityMethod
     String getIssueStatus(String issueId);
 
-    @ActivityMethod
-    void writeResultsToExcel(List<buildResultsDAO> l);
+    void addResultsToJira(List<buildResultsDAO> buildResults );
+
 
 }

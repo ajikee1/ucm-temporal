@@ -5,12 +5,13 @@ import io.temporal.activity.Activity;
 import org.apache.http.HttpHeaders;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.util.HashMap;
-import java.util.Properties;
+import temporal.Dao.buildResultsDAO;
+
+import java.util.*;
 
 public class JiraActivityImp implements JiraActivity {
 
-    public String getIssueStatus(String issueId){
+    public String getIssueStatus(String issueId) {
 
         ApiHelper apiHelper = new ApiHelper();
 
@@ -39,5 +40,13 @@ public class JiraActivityImp implements JiraActivity {
 
         return ticketStatus;
     }
+
+    @Override
+    public void addResultsToJira(List<buildResultsDAO> buildResults ) {
+        for(buildResultsDAO buildResult: buildResults){
+            System.out.println("WORKFLOW ID: " + buildResult.getWorkflowId() + " RUN ID: " + buildResult.getRunId() + " JENKINS JOB ID: " + buildResult.getJobId() + " BUILD STATUS: " + buildResult.getBuildStatus());
+        }
+    }
+
 
 }
