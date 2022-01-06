@@ -10,18 +10,17 @@ import java.util.List;
 public class UcmWorkflowInit {
 
     public static void main(String[] args) {
+        String issueId = "DIS-1";
 
         WorkflowServiceStubs service = WorkflowServiceStubs.newInstance();
         WorkflowClient client = WorkflowClient.newInstance(service);
 
-        WorkflowOptions options = WorkflowOptions.newBuilder().setTaskQueue("JENKINS_TASK_QUEUE").build();
+        WorkflowOptions options = WorkflowOptions.newBuilder().setWorkflowId(issueId).setTaskQueue("JENKINS_TASK_QUEUE").build();
         UcmWorkFlow workflow = client.newWorkflowStub(UcmWorkFlow.class, options);
 
         List<String> jobList = new ArrayList<>();
         jobList.add("nodeTest");
         jobList.add("temporal_demo");
-
-        String issueId = "DIS-1";
 
         WorkflowExecution we = WorkflowClient.start(workflow::initiateWorkFlow, jobList, issueId);
     }

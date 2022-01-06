@@ -2,6 +2,8 @@ package temporal.Jenkins;
 
 import helper.ApiHelper;
 import io.temporal.activity.Activity;
+import io.temporal.activity.ActivityExecutionContext;
+import io.temporal.internal.sync.ActivityInternal;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.json.JSONException;
@@ -18,8 +20,9 @@ public class JenkinsActivityImp implements JenkinsActivity {
     private String authHeader;
 
     @Override
-    public String triggerJenkinsBuild(String jobId) {
+    public Map <String, String> triggerJenkinsBuild(String jobId) {
         String buildStatus = null;
+        Map<String, String> map = new HashMap<>();
         apiHelper = new ApiHelper();
 
         Properties jenkinsProps = apiHelper.loadProperties("jenkins.properties");
@@ -38,11 +41,12 @@ public class JenkinsActivityImp implements JenkinsActivity {
 
                 if (executableUrl != null) {
                     buildStatus = getBuildStatus(executableUrl, jobId);
+                    map.put(jobId, buildStatus);
                 }
 
             }
         }
-        return buildStatus;
+        return map;
     }
 
     /* Get the Jenkins Crumb */

@@ -10,14 +10,6 @@ import java.util.Properties;
 
 public class JiraActivityImp implements JiraActivity {
 
-
-
-    @Override
-    public String pollJiraTicket(String issueId) {
-
-        return "";
-    }
-
     public String getIssueStatus(String issueId){
 
         ApiHelper apiHelper = new ApiHelper();
@@ -47,4 +39,5 @@ public class JiraActivityImp implements JiraActivity {
 
         return ticketStatus;
     }
+
 }
