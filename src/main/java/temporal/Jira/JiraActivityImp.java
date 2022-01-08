@@ -8,7 +8,6 @@ import org.apache.http.HttpResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
 import temporal.Dao.buildResultsDAO;
-
 import java.util.*;
 
 public class JiraActivityImp implements JiraActivity {
@@ -71,7 +70,6 @@ public class JiraActivityImp implements JiraActivity {
 
             JSONObject postJson = new JSONObject();
             postJson.put("body", "{code}" + json.toString() + "{code}");
-            System.out.println(postJson.toString());
             Map<HttpResponse, String> responseHashMap = apiHelper.runHttpPostRequestWithRequestBody(url, headersHm, postJson);
 
             HttpResponse httpResponse = null;
