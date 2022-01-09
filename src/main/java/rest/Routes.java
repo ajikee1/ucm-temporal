@@ -4,6 +4,7 @@ import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.serviceclient.WorkflowServiceStubs;
+import io.temporal.serviceclient.WorkflowServiceStubsOptions;
 import netscape.javascript.JSObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -18,8 +19,8 @@ public class Routes {
 
     @RequestMapping(value = "/initiateWorkFlow/", method = RequestMethod.POST)
     public void initiateWorkFlow(@RequestBody String request) {
-
-        WorkflowServiceStubs service = WorkflowServiceStubs.newInstance();
+        WorkflowServiceStubsOptions wfOptions = WorkflowServiceStubsOptions.newBuilder().setTarget("63.141.224.130:7233").build();
+        WorkflowServiceStubs service = WorkflowServiceStubs.newInstance(wfOptions);
         WorkflowClient client = WorkflowClient.newInstance(service);
 
         List<String> jobList = new ArrayList<>();
