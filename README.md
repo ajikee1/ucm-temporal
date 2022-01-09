@@ -26,7 +26,7 @@ git clone https://github.com/ajikee1/ucm-temporal.git
 
 6. Trigger UcmWorkflow using with POST to `http://localhost:9090/initiateWorkFlow/` with the below request body:
 
-```
+```json
 {
     "jiraTicketId": "DIS-1",
     "jobList": [
