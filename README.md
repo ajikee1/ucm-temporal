@@ -63,4 +63,4 @@ Jenkins running at: http://XX.XX.XX.XX:8080
 ```
 
 
-***JIRA ticket that triggers the Jenkins build: https://ajirh.atlassian.net/browse/DIS-1 ***
+*JIRA ticket that triggers the Jenkins build: https://ajirh.atlassian.net/browse/DIS-1 *
