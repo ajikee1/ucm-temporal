@@ -17,6 +17,7 @@ Jenkins running at: http://XX.XX.XX.XX:8080
 
 3. Pull the latest code, build, and run the services on remote server:
 `cd /home/customer/code/ucm-temporal/`
+- `git fetch`
 - `git pull`
 - `mvn clean install`
 - `mvn exec:java@spring-bootApp` : Runs the SpringBoot App
