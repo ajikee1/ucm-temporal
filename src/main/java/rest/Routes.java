@@ -19,8 +19,11 @@ public class Routes {
 
     @RequestMapping(value = "/initiateWorkFlow/", method = RequestMethod.POST)
     public void initiateWorkFlow(@RequestBody String request) {
+
+
         // WorkflowServiceStubsOptions wfOptions = WorkflowServiceStubsOptions.newBuilder().setTarget("63.141.224.130:7233").build();
         // WorkflowServiceStubs service = WorkflowServiceStubs.newInstance(wfOptions);
+
         WorkflowServiceStubs service = WorkflowServiceStubs.newInstance();
         WorkflowClient client = WorkflowClient.newInstance(service);
 
