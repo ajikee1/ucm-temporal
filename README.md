@@ -24,7 +24,10 @@ Jenkins running at: http://XX.XX.XX.XX:8080
 - `mvn exec:java@temporal_worker` : Runs the Temporal Worker
 
 
-6. Trigger UcmWorkflow using with POST to `http://localhost:9090/initiateWorkFlow/` with the below request body:
+4. Trigger UcmWorkflow
+- Request Type: POST
+- Request EndPoint: http://XX.XX.XX.XX:9090/initiateWorkFlow/
+- Request body:
 
 ```json
 {
@@ -59,5 +62,5 @@ Jenkins running at: http://XX.XX.XX.XX:8080
 ```
 
 
-*Additional info* 
-JIRA ticket that triggers the Jenkins build: 'https://ajirh.atlassian.net/browse/DIS-1'
+**Additional info 
+JIRA ticket that triggers the Jenkins build: 'https://ajirh.atlassian.net/browse/DIS-1'**
