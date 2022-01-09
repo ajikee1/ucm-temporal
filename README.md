@@ -17,4 +17,8 @@ Jenkins running at: http://XX.XX.XX.XX:8080
 ```bash
 git clone https://github.com/ajikee1/ucm-temporal.git
 ```
-5. Run `SpringApp.java` and `UcmWorker.java`
+4. Run `SpringApp.java` and `UcmWorker.java`
+- `SpringApp.java`: Runs the SpringBoot App
+- `UcmWorker.java`Runs the Temporal Worker
+6. Trigger UcmWorkflow using a POST request to:
+- http://localhost:9090/initiateWorkFlow/
