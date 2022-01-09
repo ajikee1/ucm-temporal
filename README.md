@@ -15,7 +15,7 @@ Jenkins running at: http://XX.XX.XX.XX:8080
 
 JIRA ticket that triggers the Jenkins build: 'https://ajirh.atlassian.net/browse/DIS-1'
 
-3. Run `SpringApp.java` and `UcmWorker.java`
+3. Run the services:
 - `mvn exec:java@spring-bootApp` : Runs the SpringBoot App
 - `mvn exec:java@temporal_worker` : Runs the Temporal Worker
 
