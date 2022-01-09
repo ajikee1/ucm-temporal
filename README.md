@@ -25,8 +25,8 @@ Jenkins running at: http://XX.XX.XX.XX:8080
 
 
 4. Trigger UcmWorkflow
-- Request Type: POST
-- Request EndPoint: http://XX.XX.XX.XX:9090/initiateWorkFlow/
+- Request Type: `POST`
+- Request EndPoint: `http://XX.XX.XX.XX:9090/initiateWorkFlow/`
 - Request body:
 
 ```json
