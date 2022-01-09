@@ -1,4 +1,4 @@
-# ucm-temporal
+# ucm-temporal-Demo-Steps
 
 1. Run temporal on remote server:
 ```bash
@@ -18,12 +18,13 @@ Jenkins running at: http://XX.XX.XX.XX:8080
 git clone https://github.com/ajikee1/ucm-temporal.git
 ```
 
-4. Run `SpringApp.java` and `UcmWorker.java`
+4. JIRA ticket that triggers the Jenkins build: 'https://ajirh.atlassian.net/browse/DIS-1'
+
+5. Run `SpringApp.java` and `UcmWorker.java`
 - `SpringApp.java`: Runs the SpringBoot App
 - `UcmWorker.java`Runs the Temporal Worker
 
-5. Trigger UcmWorkflow using a POST request to:
-- http://localhost:9090/initiateWorkFlow/
+6. Trigger UcmWorkflow using with POST to `http://localhost:9090/initiateWorkFlow/` with the below request body:
 
 ```
 {
