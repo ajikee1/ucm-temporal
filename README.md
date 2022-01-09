@@ -15,6 +15,6 @@ Jenkins running at: http://XX.XX.XX.XX:8080
 
 3. Clone this git repo to local
 ```bash
-https://github.com/ajikee1/ucm-temporal.git
+git clone https://github.com/ajikee1/ucm-temporal.git
 ```
-5. Run 'SpringApp.java' and 'UcmWorker.java'
+5. Run `SpringApp.java` and `UcmWorker.java`
