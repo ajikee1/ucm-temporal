@@ -7,21 +7,28 @@ docker-compose -f docker-compose-mysql.yml up
 ```
 Temporal running at: http://XX.XX.XX.XX:8088
 
-2. Start Jenkins server on remote host: 
+
+2. Start Jenkins server on remote server: 
 ```bash
 sudo systemctl start jenkins
 ```
 Jenkins running at: http://XX.XX.XX.XX:8080
 
-JIRA ticket that triggers the Jenkins build: 'https://ajirh.atlassian.net/browse/DIS-1'
 
-3. Run the services:
-`cd /home/customer/code/ucm-temporal/target`
+3. Run the services on remote server:
+`cd /home/customer/code/ucm-temporal/`
 - `mvn exec:java@spring-bootApp` : Runs the SpringBoot App
 - `mvn exec:java@temporal_worker` : Runs the Temporal Worker
 
 
 
+
+
+
+
+
+
+JIRA ticket that triggers the Jenkins build: 'https://ajirh.atlassian.net/browse/DIS-1'
 
 
 6. Trigger UcmWorkflow using with POST to `http://localhost:9090/initiateWorkFlow/` with the below request body:
