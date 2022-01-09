@@ -69,7 +69,7 @@ public class JiraActivityImp implements JiraActivity {
             }
 
             JSONObject postJson = new JSONObject();
-            postJson.put("body", "{code}" + json.toString() + "{code}");
+            postJson.put("body", "{code:json}" + json.toString() + "{code}");
             Map<HttpResponse, String> responseHashMap = apiHelper.runHttpPostRequestWithRequestBody(url, headersHm, postJson);
 
             HttpResponse httpResponse = null;
