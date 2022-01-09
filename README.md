@@ -16,6 +16,7 @@ Jenkins running at: http://XX.XX.XX.XX:8080
 
 
 3. Pull the latest code, build, and run the services on remote server:
+
 `cd /home/customer/code/ucm-temporal/`
 - `git fetch`
 - `git pull`
@@ -62,4 +63,4 @@ Jenkins running at: http://XX.XX.XX.XX:8080
 ```
 
 
-**JIRA ticket that triggers the Jenkins build: https://ajirh.atlassian.net/browse/DIS-1 **
+***JIRA ticket that triggers the Jenkins build: https://ajirh.atlassian.net/browse/DIS-1 ***
