@@ -9,5 +9,9 @@ Temporal running at: http://XX.XX.XX.XX:8088
 
 2. Start Jenkins server on remote host: 
 ```bash
-sudo systemctl status jenkins
+sudo systemctl start jenkins
 ```
+Jenkins running at: http://XX.XX.XX.XX:8080
+
+3. Clone this git repo to local.
+4. Run 'SpringApp.java' and 'UcmWorker.java'
