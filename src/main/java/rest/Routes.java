@@ -4,10 +4,10 @@ import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.serviceclient.WorkflowServiceStubs;
-import io.temporal.serviceclient.WorkflowServiceStubsOptions;
-import netscape.javascript.JSObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import temporal.UcmWorkFlow;
 
@@ -18,12 +18,8 @@ import java.util.List;
 public class Routes {
 
     @RequestMapping(value = "/initiateWorkFlow/", method = RequestMethod.POST)
-    public void initiateWorkFlow(@RequestBody String request) {
-
-
-        // WorkflowServiceStubsOptions wfOptions = WorkflowServiceStubsOptions.newBuilder().setTarget("63.141.224.130:7233").build();
-        // WorkflowServiceStubs service = WorkflowServiceStubs.newInstance(wfOptions);
-
+    public ResponseEntity<Object> initiateWorkFlow(@RequestBody String request) {
+        String runId = "No Run ID generated";
         WorkflowServiceStubs service = WorkflowServiceStubs.newInstance();
         WorkflowClient client = WorkflowClient.newInstance(service);
 
@@ -50,11 +46,15 @@ public class Routes {
 
             if (!jobList.isEmpty()) {
                 WorkflowExecution we = WorkflowClient.start(workflow::initiateWorkFlow, jobList, issueId);
+
+                runId = we.getRunId();
+                return new ResponseEntity<>(runId, HttpStatus.OK);
+
             }
 
         } catch (Exception e) {
         }
-
+        return new ResponseEntity<>(runId, HttpStatus.OK);
 
     }
 }
